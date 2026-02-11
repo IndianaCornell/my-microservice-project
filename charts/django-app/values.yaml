@@ -1,0 +1,23 @@
+replicaCount: 2
+
+image:
+  repository: <ECR_URL>
+  tag: latest
+  pullPolicy: Always
+
+service:
+  type: LoadBalancer
+  port: 80
+
+config:
+  POSTGRES_DB: django
+  POSTGRES_USER: django
+  POSTGRES_PASSWORD: django123
+  DJANGO_DEBUG: "False"
+  DJANGO_ALLOWED_HOSTS: "*"
+
+autoscaler:
+  minReplicas: 2
+  maxReplicas: 6
+  targetCPUUtilizationPercentage: 70
+ 
