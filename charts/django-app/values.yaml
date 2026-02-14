@@ -2,8 +2,8 @@ replicaCount: 2
 
 image:
   repository: 679626270053.dkr.ecr.us-west-2.amazonaws.com/lesson-8-9-ecr
-  tag: latest
-  pullPolicy: IfNotPresent
+  tag: v2
+  pullPolicy: Always
 
 service:
   type: LoadBalancer
