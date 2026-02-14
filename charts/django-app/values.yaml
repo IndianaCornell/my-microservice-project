@@ -1,0 +1,21 @@
+replicaCount: 2
+
+image:
+  repository: 679626270053.dkr.ecr.us-west-2.amazonaws.com/lesson-8-9-ecr
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: LoadBalancer
+  port: 80
+
+config:
+  DJANGO_DEBUG: "False"
+  DJANGO_ALLOWED_HOSTS: "*"
+  DB_ENGINE: django.db.backends.sqlite3
+  DB_NAME: /app/db.sqlite3
+
+autoscaler:
+  minReplicas: 2
+  maxReplicas: 6
+  targetCPUUtilizationPercentage: 70
