@@ -158,71 +158,89 @@ lesson-8-9/
 4.  **Знайдіть ваш застосунок** (наприклад, `django-app`) і перевірте його статус. Він має бути `Synced` та `Healthy`. Ви можете побачити всі ресурси, які були розгорнуті, та їхній стан.
 
 
-############################################################
-# ПРИКЛАД ВИКОРИСТАННЯ МОДУЛЯ RDS
-############################################################
 
+## Модуль RDS
+
+### Приклад використання
+
+```hcl
 module "rds" {
   source = "./modules/rds"
 
-  ##########################################################
-  # Тип бази даних
-  ##########################################################
-
+  # Тип бази даних:
   # false → створюється звичайна aws_db_instance
   # true  → створюється aws_rds_cluster + writer instance
   use_aurora = false
 
-  engine         = "postgres"          # postgres | mysql | aurora-postgresql
+  # Налаштування рушія
+  engine         = "postgres"        # postgres | mysql | aurora-postgresql
   engine_version = "14"
   instance_class = "db.t3.micro"
   multi_az       = false
 
-  ##########################################################
   # Параметри бази даних
-  ##########################################################
-
   db_name  = "appdb"
   username = "postgres"
   password = "StrongPassword123"
 
-  ##########################################################
   # Мережеві параметри
-  ##########################################################
-
   vpc_id     = module.vpc.vpc_id
   subnet_ids = module.vpc.private_subnet_ids
 }
+```
 
-############################################################
-# ЯК ЗМІНИТИ ТИП БД
-############################################################
+### Логіка роботи модуля
 
-# Звичайний PostgreSQL:
-# use_aurora = false
-# engine     = "postgres"
+Якщо `use_aurora = false` створюється:
+- aws_db_instance
+- aws_db_subnet_group
+- aws_security_group
+- aws_db_parameter_group
 
-# Звичайний MySQL:
-# use_aurora = false
-# engine     = "mysql"
+Якщо `use_aurora = true` створюється:
+- aws_rds_cluster
+- aws_rds_cluster_instance (writer)
+- aws_db_subnet_group
+- aws_security_group
+- aws_db_parameter_group
 
-# Aurora PostgreSQL:
-# use_aurora = true
-# engine     = "aurora-postgresql"
+В обох випадках автоматично створюється:
+- DB Subnet Group
+- Security Group
+- Parameter Group
 
-############################################################
-# ОПИС ЗМІННИХ
-############################################################
+### Опис змінних
 
-# use_aurora      - true/false, перемикає між RDS та Aurora
-# engine          - тип рушія БД
-# engine_version  - версія рушія
-# instance_class  - клас інстансу
-# multi_az        - вмикає Multi-AZ
-# db_name         - назва бази даних
-# username        - master-користувач
-# password        - master-пароль
-# vpc_id          - ID VPC
-# subnet_ids      - список приватних підмереж
-############################################################
+- use_aurora — перемикач між RDS та Aurora
+- engine — тип рушія БД
+- engine_version — версія рушія
+- instance_class — клас інстансу
+- multi_az — Multi-AZ режим для RDS
+- db_name — назва бази
+- username — master-користувач
+- password — master-пароль
+- vpc_id — ID VPC
+- subnet_ids — список приватних підмереж
 
+### Як змінити тип БД
+
+Звичайний PostgreSQL:
+
+```hcl
+use_aurora = false
+engine     = "postgres"
+```
+
+Звичайний MySQL:
+
+```hcl
+use_aurora = false
+engine     = "mysql"
+```
+
+Aurora PostgreSQL:
+
+```hcl
+use_aurora = true
+engine     = "aurora-postgresql"
+```
